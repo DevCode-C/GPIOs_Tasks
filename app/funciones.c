@@ -9,6 +9,7 @@
 // #define TASK 1
 
 GPIO_InitTypeDef    GPIO_PORTC;
+GPIO_InitTypeDef    GPIO_PORTA;
 GPIO_InitTypeDef    GPIO_InitStruct;
 
 
@@ -28,6 +29,11 @@ void initTask()
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.Pin   = GPIO_PIN_5;
     HAL_GPIO_Init( GPIOA, &GPIO_InitStruct );
+
+    GPIO_PORTA.Mode = GPIO_MODE_INPUT;
+    GPIO_PORTA.Pull = GPIO_NOPULL;
+    GPIO_PORTA.Pin  =  GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3;
+    HAL_GPIO_Init(GPIOA, &GPIO_PORTA);
     
 }
 #if (TASK == 1)
@@ -112,20 +118,26 @@ void initTask()
     */
     void task(void)
     {
-        uint8_t state = 0;
-        uint8_t count = 0;
+        
+        uint8_t state       = 0;
+        // uint8_t count       = 0;
+        uint8_t inputState  = 0;
         for( ; ; )
         {
            for (uint8_t i = 0; i < 8; i++)
             {
+                inputState  = HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0) + 1;
+                inputState += HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_1)<<1;
+                inputState += HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_2)<<2;
+                inputState += HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_3)<<3;
+
                 state = (1<<i) & 0xff;
                 HAL_GPIO_WritePin(GPIOC,0xff,1);
                 HAL_GPIO_WritePin(GPIOC,state,0);
                 
                 HAL_GPIO_TogglePin( GPIOA, GPIO_PIN_5 );
-                HAL_Delay( 10u * count );
+                HAL_Delay( inputState*10);
             }
-            count ++;
         }
     }   
 #endif
