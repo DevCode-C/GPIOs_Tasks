@@ -1,7 +1,7 @@
 #ifndef FUNCIONES__H__
     #define FUNCIONES__H__
 
-    #define TASK 4
+    #define TASK 2
 
     void initTask(void);
     #if (TASK == 1)
@@ -19,4 +19,5 @@
     #if (TASK == 4)
         void task(void);
     #endif
+
 #endif
